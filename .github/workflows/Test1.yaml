@@ -30,6 +30,6 @@ jobs:
         GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
         credentials_json: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
       run: |
-        ls
-        sudo docker login -u _json_key --password-stdin https://europe-west3-docker.pkg.dev < $credential_json
+        mv googlecloud-credential googlecloud-credential.json
+        sudo docker login -u _json_key --password-stdin https://europe-west3-docker.pkg.dev < googlecloud-credential.json
         sudo docker push europe-west3-docker.pkg.dev/$GOOGLE_PROJECT/dos18-onl/nginx:latest
