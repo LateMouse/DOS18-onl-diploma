@@ -21,8 +21,6 @@ resource "google_container_cluster" "primary" {
   initial_node_count        = 1
   network                   = google_compute_network.main.self_link
   subnetwork                = google_compute_subnetwork.private.self_link
-  logging_service           = "logging.googleapis.com/kubernetes"
-  monitoring_service        = "monitoring.googleapis.com/kubernetes"
   networking_mode           = "VPC_NATIVE"
 
   node_locations = [
@@ -43,7 +41,10 @@ resource "google_container_cluster" "primary" {
   }
 
 ##  release_channel - канал выпуска для обновлений Kubernetes. 
-## В данном случае, установлено значение "channel = "REGULAR"", что означает использование регулярного канала выпуска.
+## Каналы выпуска GKE обычно представлены следующим образом:
+##  REGULAR: предоставляет стабильные и широко протестированные версии Kubernetes.
+##  RAPID: предлагает более новые версии Kubernetes, которые прошли некоторую степень тестирования. 
+##  STABLE: предлагает более старые, но очень стабильные версии Kubernetes. 
   release_channel {
     channel = "REGULAR"
   }
