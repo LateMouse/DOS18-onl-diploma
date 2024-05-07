@@ -15,21 +15,21 @@
 ##  node_locations - список местоположений, где будут размещены узлы кластера Kubernetes как резервной площадки
 
 resource "google_container_cluster" "primary" {
-  name                      = "primary"
-  location                  = var.zone
-  remove_default_node_pool  = true
-  initial_node_count        = 1
-  network                   = google_compute_network.main.self_link
-  subnetwork                = google_compute_subnetwork.private.self_link
-  networking_mode           = "VPC_NATIVE"
+  name                     = "primary"
+  location                 = var.zone
+  remove_default_node_pool = true
+  initial_node_count       = 1
+  network                  = google_compute_network.main.self_link
+  subnetwork               = google_compute_subnetwork.private.self_link
+  networking_mode          = "VPC_NATIVE"
 
   node_locations = [
     "europe-west3-a"
   ]
 
-##  addons_config - конфигурация дополнений к кластеру Kubernetes
-##      http_load_balancing - балансировка нагрузки HTTP. В данном случае, отключение балансировки нагрузки HTTP.
-##      horizontal_pod_autoscaling - горизонтальное масштабирование подов
+  ##  addons_config - конфигурация дополнений к кластеру Kubernetes
+  ##      http_load_balancing - балансировка нагрузки HTTP. В данном случае, отключение балансировки нагрузки HTTP.
+  ##      horizontal_pod_autoscaling - горизонтальное масштабирование подов
 
   addons_config {
     http_load_balancing {
@@ -40,37 +40,37 @@ resource "google_container_cluster" "primary" {
     }
   }
 
-##  release_channel - канал выпуска для обновлений Kubernetes. 
-## Каналы выпуска GKE обычно представлены следующим образом:
-##  REGULAR: предоставляет стабильные и широко протестированные версии Kubernetes.
-##  RAPID: предлагает более новые версии Kubernetes, которые прошли некоторую степень тестирования. 
-##  STABLE: предлагает более старые, но очень стабильные версии Kubernetes. 
+  ##  release_channel - канал выпуска для обновлений Kubernetes. 
+  ## Каналы выпуска GKE обычно представлены следующим образом:
+  ##  REGULAR: предоставляет стабильные и широко протестированные версии Kubernetes.
+  ##  RAPID: предлагает более новые версии Kubernetes, которые прошли некоторую степень тестирования. 
+  ##  STABLE: предлагает более старые, но очень стабильные версии Kubernetes. 
   release_channel {
     channel = "REGULAR"
   }
 
-##  workload_identity_config - конфигурация идентификации нагрузки
+  ##  workload_identity_config - конфигурация идентификации нагрузки
   workload_identity_config {
     workload_pool = "dos18-onl.svc.id.goog"
   }
 
-##  ip_allocation_policy - политика выделения IP-адресов.
-##      cluster_secondary_range_name: Определяет имя дополнительного диапазона IP-адресов для подов.
-##      services_secondary_range_name: Определяет имя дополнительного диапазона IP-адресов для сервисов.
+  ##  ip_allocation_policy - политика выделения IP-адресов.
+  ##      cluster_secondary_range_name: Определяет имя дополнительного диапазона IP-адресов для подов.
+  ##      services_secondary_range_name: Определяет имя дополнительного диапазона IP-адресов для сервисов.
 
   ip_allocation_policy {
-    cluster_secondary_range_name    = "k8s-pod-range"
-    services_secondary_range_name   = "k8s-service-range"
+    cluster_secondary_range_name  = "k8s-pod-range"
+    services_secondary_range_name = "k8s-service-range"
   }
 
-##  private_cluster_config - Конфигурация приватного кластера
-##      enable_private_nodes: следует ли включить приватные узлы
-##      enable_private_endpoint: следует ли включить приватную конечную точку
-##      master_ipv4_cidr_block: блок IPv4-адресов для мастер-узлов
+  ##  private_cluster_config - Конфигурация приватного кластера
+  ##      enable_private_nodes: следует ли включить приватные узлы
+  ##      enable_private_endpoint: следует ли включить приватную конечную точку
+  ##      master_ipv4_cidr_block: блок IPv4-адресов для мастер-узлов
 
   private_cluster_config {
-    enable_private_nodes        = true
-    enable_private_endpoint     = false
-    master_ipv4_cidr_block      = "172.16.0.0/28"
-    }
+    enable_private_nodes    = true
+    enable_private_endpoint = false
+    master_ipv4_cidr_block  = "172.16.0.0/28"
   }
+}
