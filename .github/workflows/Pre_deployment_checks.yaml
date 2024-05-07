@@ -24,7 +24,8 @@ jobs:
     - name: Run Terraform Init
       run: |
         mv google google.json
-        export GOOGLE_APPLICATION_CREDENTIALS=google.json
+        pwd
+        export GOOGLE_APPLICATION_CREDENTIALS = /google.json
         cd terraform
         terraform init
     
