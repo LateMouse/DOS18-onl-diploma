@@ -13,10 +13,10 @@ jobs:
     steps:
     
     - name: Git code chekout
-      uses: actions/checkout@main
+      uses: actions/checkout@v4
     
     - name: Set up Terraform
-      uses: hashicorp/setup-terraform@v2
+      uses: hashicorp/setup-terraform@v3
       with:
         cli_config_credentials_token: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
         terraform_wrapper: false
