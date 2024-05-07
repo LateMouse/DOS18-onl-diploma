@@ -36,4 +36,4 @@ jobs:
     - name: Run Terraform Plan
       run: terraform plan -input=false
       env:
-        GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }} 
+        GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }} 
