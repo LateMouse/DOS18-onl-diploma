@@ -24,11 +24,9 @@ jobs:
     - name: Run Terraform Init
       env:
         GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
-        credentials_json: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+        GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
       run: |
         cd terraform
-        echo '${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}' > google_credential_file.json
-        export GOOGLE_APPLICATION_CREDENTIALS=$(jq -r '.myKey' google_credential_file.json)
         terraform init
     
     - name: Run Terraform Plan
