@@ -22,12 +22,11 @@ jobs:
       uses: actionshub/terraform-lint@main
        
     - name: Run Terraform Init
-      env:
-        GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
-        GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
       run: |
         cd terraform
         terraform init
+      env:
+        GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
     
     - name: Run Terraform Plan
       run: terraform plan
