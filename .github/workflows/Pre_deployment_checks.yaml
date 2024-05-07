@@ -1,33 +1,37 @@
-name: Pre Derployment checks
+name: Pre Deployment checks
 
 on:
   push:
     branches:
-    - main
-    - dev
+      - main
+      - dev
 
 jobs:
-  PreDerploymentChecks:
+  PreDeploymentChecks:
     runs-on: ubuntu-latest
     
+    defaults:
+      run:
+        shell: bash
+   
     steps:
-    
-    - name: Git code chekout
+    - name: Git code checkout
       uses: actions/checkout@v4
     
     - name: Set up Terraform
       uses: hashicorp/setup-terraform@v3
+      with:
+        cli_config_credentials_token: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
 
     - name: Run Lint Terraform
       uses: actionshub/terraform-lint@main  
 
     - name: Run Terraform Init
       run: |
-        mv google google.json
-        pwd
-        export GOOGLE_APPLICATION_CREDENTIALS = /google.json
         cd terraform
         terraform init
+      env:
+        GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }} 
     
     - name: Run Terraform Plan
       run: terraform plan
