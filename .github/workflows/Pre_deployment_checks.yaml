@@ -27,7 +27,7 @@ jobs:
     - name: Run Terraform Init
       run: |
         cd terraform
-        export GOOGLE_APPLICATION_CREDENTIALS = @GOOGLE_APPLICATION_CREDENTIALS
+        export GOOGLE_APPLICATION_CREDENTIALS = @cli_config_credentials_token
         terraform init
     
     - name: Run Terraform Plan
