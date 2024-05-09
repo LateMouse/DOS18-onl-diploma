@@ -1,6 +1,4 @@
-## Напишите инструкцию version в версии 3.
 version: '3'
-
 services:
   web:
     image: web
