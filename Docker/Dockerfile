@@ -2,7 +2,13 @@ FROM nginx:latest
 # Напишите инструкцию FROM, которая указывает базовый образ Ubuntu 20.04.
 #FROM ubuntu:20.04
 
-RUN echo "Hello World!" > /usr/share/nginx/html/index.html
+#RUN echo "Hello World!" > /usr/share/nginx/html/index.html
+
+COPY WebSite/index.html /usr/share/nginx/html/index.html
+COPY WebSite/about.html /usr/share/nginx/html/about.html
+COPY WebSite/project.html /usr/share/nginx/html/project.html
+COPY WebSite/images/LateMouse.jpg /usr/share/nginx/html/images/LateMouse.jpg
+COPY WebSite/images/devops.jpg /usr/share/nginx/html/images/devops.jpg
 
 # Установите необходимые зависимости с помощью инструкции RUN. Установите пакеты nginx и curl, а также создайте каталог /app/static
 #RUN apt-get update && apt-get install -y nginx curl && mkdir -p /app/static
