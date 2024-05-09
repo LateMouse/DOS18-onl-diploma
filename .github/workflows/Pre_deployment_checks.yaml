@@ -58,7 +58,7 @@ jobs:
     - name: Build and run Docker Compose
       run: |
         cd Docker
-        docker-compose up -d
+        docker-compose up -d -y
 
     - name: Проверка приложения
       run: |
