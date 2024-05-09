@@ -24,29 +24,31 @@ jobs:
     - name: Run Lint Terraform
       uses: actionshub/terraform-lint@main  
 
-    - name: Run Terraform Init
-      run: |
-        cd terraform
-        terraform init
-      env:
-        GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }} 
+#    - name: Run Terraform Init
+#      run: |
+#        cd terraform
+#        terraform init
+#      env:
+#        GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }} 
 
-    - name: Run Terraform Plan
-      run: |
-        cd terraform
-        terraform plan -input=false
-      env:
-        GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }} 
+#    - name: Run Terraform Plan
+#      run: |
+#        cd terraform
+#        terraform plan -input=false
+#      env:
+#        GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }} 
 
-    - name: Terraform Apply
+#    - name: Terraform Apply
+#      run: |
+#        cd terraform
+#        terraform apply -auto-approve -input=false
+#      env:
+#        GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+
+    - name: Build local the Docker image
       run: |
-        cd terraform
-        terraform apply -auto-approve -input=false
-      env:
-        GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
-# Ининциализация Google API
-    - name: install the gcloud cli
-      uses: google-github-actions/auth@v2
-      with:
-        project_id: ${{ secrets.GOOGLE_PROJECT }}
-        credentials_json: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+        cd Docker
+        docker build -t nginx .
+        docker run --name nginx -p 80:8080 nginx
+        docker start nginx
+        curl 127.0.0.1
