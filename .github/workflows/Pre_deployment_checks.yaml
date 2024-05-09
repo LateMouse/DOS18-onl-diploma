@@ -52,10 +52,11 @@ jobs:
         dockerfile: ./Docker/Dockerfile
        
     - name: Lint Yaml file
-      uses: ibiqlik/action-yamllint@v3
+      uses: karancode/yamllint-github-action@master
       with:
-        file_or_dir: ./Docker/docker-compose.yml
-        config_file: .yamllint.yml
+        yamllint_file_or_dir: './Docker/'
+        yamllint_strict: false
+        yamllint_comment: true
     
     - name: Build local the Docker image
       run: |
