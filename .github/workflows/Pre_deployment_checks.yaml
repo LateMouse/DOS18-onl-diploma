@@ -48,7 +48,19 @@ jobs:
     - name: Build local the Docker image
       run: |
         cd Docker
-        docker build -t nginx .
-        docker run --name nginx -p 80:8080 nginx
-        docker start nginx
-        curl 127.0.0.1
+        docker build -t app .
+
+    - name: Set up Docker Compose
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y docker-compose
+  
+    - name: Build and run Docker Compose
+      run: |
+        cd Docker
+        docker-compose up -d
+
+    - name: Проверка приложения
+      run: |
+        curl 127.0.0.1:8080
+  
