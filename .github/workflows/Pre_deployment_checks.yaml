@@ -59,7 +59,7 @@ jobs:
     - name: Build and run Docker Compose
       run: |
         cd Docker
-        docker-compose -f "docker-compose.yml" up -d --build
+        sudo docker-compose -f "docker-compose.yml" up -d --build
 
     - name: Проверка приложения
       run: |
