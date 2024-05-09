@@ -51,7 +51,7 @@ resource "google_container_cluster" "primary" {
 
   ##  workload_identity_config - конфигурация идентификации нагрузки
   workload_identity_config {
-    workload_pool = "dos18-onl.svc.id.goog"
+    workload_pool = "dos18-onl-dip.svc.id.goog"
   }
 
   ##  ip_allocation_policy - политика выделения IP-адресов.
