@@ -45,6 +45,12 @@ jobs:
 #      env:
 #        GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
 
+
+    - name: Lint Docker file
+      uses: rusty-actions/dockerfile-linter@v1
+      with:
+        dockerfile: ./Docker/Dockerfile
+
     - name: Build local the Docker image
       run: |
         cd Docker
