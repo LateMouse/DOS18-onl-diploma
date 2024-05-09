@@ -44,3 +44,9 @@ jobs:
         terraform apply -auto-approve -input=false
       env:
         GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+
+    - name: install the gcloud cli
+      uses: google-github-actions/auth@v2
+      with:
+        project_id: ${{ secrets.GOOGLE_PROJECT }}
+        credentials_json: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
