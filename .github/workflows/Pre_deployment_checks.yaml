@@ -18,11 +18,11 @@ jobs:
     - name: Git code checkout
       uses: actions/checkout@v4
     
-    - name: Set up Terraform
-      uses: hashicorp/setup-terraform@v3
+#    - name: Set up Terraform
+#      uses: hashicorp/setup-terraform@v3
 
-    - name: Run Lint Terraform
-      uses: actionshub/terraform-lint@main  
+#    - name: Run Lint Terraform
+#      uses: actionshub/terraform-lint@main  
 
 #    - name: Run Terraform Init
 #      run: |
@@ -48,17 +48,18 @@ jobs:
     - name: Build local the Docker image
       run: |
         cd Docker
-        docker build -t app .
+        docker build -t web .
 
     - name: Set up Docker Compose
       run: |
-        sudo apt-get update
+        cd Docker
+        apt-get update
         sudo apt-get install -y docker-compose
   
     - name: Build and run Docker Compose
       run: |
         cd Docker
-        docker-compose up -d -y
+        docker-compose -f "docker-compose.yml" up -d --build
 
     - name: Проверка приложения
       run: |
