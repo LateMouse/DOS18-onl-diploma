@@ -66,3 +66,9 @@ jobs:
     - name: Проверка приложения
       run: |
         curl 127.0.0.1:8080
+
+    - name: Stop containers
+      if: always()
+      run: |
+        cd Docker
+        docker-compose -f "docker-compose.yml" down
