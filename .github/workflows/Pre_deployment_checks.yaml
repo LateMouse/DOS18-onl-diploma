@@ -65,7 +65,13 @@ jobs:
 
     - name: Проверка приложения
       run: |
-        curl 127.0.0.1:8080
+        response=$(curl -s -o /dev/null -w "%{http_code}" https://example.com)
+        if [ $response -eq 200 ]; then
+          echo "Проверка прошла успешно"
+        else
+            echo "Ошибка: код ответа $response"
+            exit 1
+        fi
 
     - name: Stop containers
       if: always()
