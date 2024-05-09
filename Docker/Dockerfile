@@ -1,4 +1,4 @@
-FROM nginx:latest
+FROM nginx:1.25.5
 # Напишите инструкцию FROM, которая указывает базовый образ Ubuntu 20.04.
 #FROM ubuntu:20.04
 
