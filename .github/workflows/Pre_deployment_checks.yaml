@@ -50,7 +50,10 @@ jobs:
       uses: rusty-actions/dockerfile-linter@v1
       with:
         dockerfile: ./Docker/Dockerfile
-
+       
+    - name: Lint Yaml file
+      uses: ibiqlik/action-yamllint@v3
+    
     - name: Build local the Docker image
       run: |
         cd Docker
@@ -71,11 +74,25 @@ jobs:
 
     - name: Проверка приложения
       run: |
-        response=$(curl -s -o /dev/null -w "%{http_code}" 127.0.0.1:8080)
+        response=$(curl -s -o /dev/null -w "%{http_code}" 127.0.0.1:8080/index.html)
         if [ $response -eq 200 ]; then
-          echo "Проверка прошла успешно"
+          echo "Проверка доступности главной страницы: успешно"
         else
-            echo "Ошибка: код ответа $response"
+            echo "Проверка доступности главной страницы, ошибка. Код ответа: $response"
+            exit 1
+        fi
+        response=$(curl -s -o /dev/null -w "%{http_code}" 127.0.0.1:8080/about.html)
+        if [ $response -eq 200 ]; then
+          echo "Проверка доступности страницы описания проекта: успешно"
+        else
+            echo "Проверка доступности страницы описания проекта, ошибка. Код ответа: $response"
+            exit 1
+        fi
+        response=$(curl -s -o /dev/null -w "%{http_code}" 127.0.0.1:8080/project.html)
+        if [ $response -eq 200 ]; then
+          echo "Проверка доступности страницы работы с проектом: успешно"
+        else
+            echo "Проверка доступности страницы работы с проектом, ошибка. Код ответа: $response"
             exit 1
         fi
 
