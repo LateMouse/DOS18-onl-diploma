@@ -30,7 +30,7 @@ jobs:
         terraform init
       env:
         GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }} 
-    
+
     - name: Run Terraform Plan
       run: |
         cd terraform
@@ -44,7 +44,7 @@ jobs:
         terraform apply -auto-approve -input=false
       env:
         GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
-
+# Ининциализация Google API
     - name: install the gcloud cli
       uses: google-github-actions/auth@v2
       with:
