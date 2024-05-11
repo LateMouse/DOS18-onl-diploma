@@ -11,9 +11,9 @@
 ##      Они также имеют разрешение на доступ к Google Cloud Platform через определенные oauth-области видимости.
 
 
-resource "google_service_account" "kubernetes" {
-  account_id = "kubernetes"
-}
+#resource "google_service_account" "kubernetes" {
+#  account_id = "kubernetes"
+#}
 
 
 ##  resource "google_container_node_pool" "general" - пул узлов в кластере Kubernetes
@@ -51,7 +51,7 @@ resource "google_container_node_pool" "general" {
       role = "general"
     }
 
-    service_account = google_service_account.kubernetes.email
+    service_account = google_service_account.api.email
     oauth_scopes = [
       "https://www.googleapis.com/auth/cloud-platform"
     ]
@@ -111,7 +111,7 @@ resource "google_container_node_pool" "spot" {
       effect = "NO_SCHEDULE"
     }
 
-    service_account = google_service_account.kubernetes.email
+    service_account = google_service_account.api.email
     oauth_scopes = [
       "https://www.googleapis.com/auth/cloud-platform"
     ]

@@ -47,8 +47,6 @@ spec:
       labels:
         app: nginx
     spec:
-      imagePullSecrets:
-        - name: regcreddocker
       containers:
         - name: nginx
-          image: europe-docker.pkg.dev/dos18-onl-dip/dos18-onl/nginx:latest
+          image: europe-docker.pkg.dev/dos18-onl-dip/dos18-onl/diploma:latest
