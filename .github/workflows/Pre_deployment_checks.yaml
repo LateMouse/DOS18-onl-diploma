@@ -157,7 +157,6 @@ jobs:
       working-directory: ./k8s
       run: |
         gcloud container clusters get-credentials primary --zone europe-west3-b --project $GOOGLE_PROJECT
-        sed -i "s/GOOGLE_PROJECT/$GOOGLE_PROJECT/g" diploma.yaml
         kubectl apply -f diploma.yaml
       env:
        GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
