@@ -115,6 +115,7 @@ jobs:
 
     - name: Build the Docker image to GCP Artifact
       run: |
+        cd Docker
         gcloud auth configure-docker europe-west3-docker.pkg.dev/$GOOGLE_PROJECT/dos18-onl
         sudo docker buildx build -t europe-west3-docker.pkg.dev/$GOOGLE_PROJECT/dos18-onl/nginx:latest .
       env:
@@ -122,6 +123,7 @@ jobs:
 
     - name: Push the Docker image to GCP Artifact
       run: |
+        cd Docker
         sudo docker login -u _json_key --password-stdin https://europe-west3-docker.pkg.dev < $GOOGLE_APPLICATION_CREDENTIALS
         sudo docker push europe-west3-docker.pkg.dev/$GOOGLE_PROJECT/dos18-onl/nginxv:latest
       env:
