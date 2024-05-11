@@ -126,6 +126,7 @@ jobs:
       run: |
         sudo docker login -u _json_key --password-stdin https://europe-west3-docker.pkg.dev < $GOOGLE_APPLICATION_CREDENTIALS
         sudo docker push europe-west3-docker.pkg.dev/$GOOGLE_PROJECT/dos18-onl/nginx:latest
+        sudo docker images europe-west3-docker.pkg.dev/$GOOGLE_PROJECT/dos18-onl/
       env:
         GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
         credentials_json: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
