@@ -28,5 +28,5 @@ spec:
         app: nginx
     spec:
       containers:
-      - name: diploma
-        image: europe-west3-docker.pkg.dev/GOOGLE_PROJECT/dos18-onl/diploma:latest
+      - name: nginx
+        image: europe-west3-docker.pkg.dev/GOOGLE_PROJECT/dos18-onl/nginx:latest
