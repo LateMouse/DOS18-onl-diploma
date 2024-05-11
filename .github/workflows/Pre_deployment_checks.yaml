@@ -134,6 +134,7 @@ jobs:
         use_auth_provider: true
       env:
         GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
+        credentials_json: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
 
     - name: Build the Docker image to GCP Artifact
       working-directory: ./Docker
