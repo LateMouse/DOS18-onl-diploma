@@ -135,13 +135,13 @@ jobs:
       env:
         GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
 
-#    - name: Build the Docker image to GCP Artifact
-#      working-directory: ./Docker
-#      run: |
-#        gcloud auth configure-docker europe-west3-docker.pkg.dev/$GOOGLE_PROJECT/dos18-onl
-#        sudo docker buildx build -t europe-west3-docker.pkg.dev/$GOOGLE_PROJECT/dos18-onl/diploma:latest .
-#      env:
-#        GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
+    - name: Build the Docker image to GCP Artifact
+      working-directory: ./Docker
+      run: |
+        gcloud auth configure-docker europe-west3-docker.pkg.dev/$GOOGLE_PROJECT/dos18-onl
+        sudo docker buildx build -t europe-west3-docker.pkg.dev/$GOOGLE_PROJECT/dos18-onl/diploma:latest .
+      env:
+        GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
 
 #    - name: Push the Docker image to GCP Artifact
 #      working-directory: ./Docker
