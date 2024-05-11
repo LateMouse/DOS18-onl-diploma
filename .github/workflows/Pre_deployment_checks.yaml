@@ -130,16 +130,11 @@ jobs:
       with:
         cluster_name: primary
         location: europe-west3-b
-        project_id: dos18-onl-dip
+        project_id: $GOOGLE_PROJECT
         use_auth_provider: true
       env:
         GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
         credentials_json: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
-
-    - name: get pods
-      working-directory: ./Docker
-      run: |
-        kubectl get pods
 
 #    - name: Build the Docker image to GCP Artifact
 #      working-directory: ./Docker
@@ -158,11 +153,12 @@ jobs:
 #        GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
 #        credentials_json: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
 
-#    - name: Deploy to GKE
-#      working-directory: ./k8s
-#      run: |
-#        gcloud container clusters get-credentials primary --zone europe-west3-b --project $GOOGLE_PROJECT
-#        sed -i "s.GOOGLE_PROJECT/$GOOGLE_PROJECT/g" diploma.yaml
-#       env:
-#         GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
-#         credentials_json: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+    - name: Deploy to GKE
+      working-directory: ./k8s
+      run: |
+        gcloud container clusters get-credentials primary --zone europe-west3-b --project $GOOGLE_PROJECT
+        sed -i "s.GOOGLE_PROJECT/$GOOGLE_PROJECT/g" diploma.yaml
+        kubectl apply -f diploma.yaml
+       env:
+         GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
+         credentials_json: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
