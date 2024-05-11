@@ -47,6 +47,8 @@ spec:
       labels:
         app: nginx
     spec:
+      imagePullSecrets:
+        - name: regcred
       containers:
-      - name: nginx
-        image: europe-west3-docker.pkg.dev/dos18-onl-dip/dos18-onl/nginx@sha256:b12f291d2b8337075a7ca882249f99e8e24f131b6f97629ef31e45fbec8c67c3
+        - name: nginx
+          image: europe-docker.pkg.dev/dos18-onl-dip/dos18-onl/nginx@sha256:b928dee80ddd5fa5d1c28fc1d17a36d2937694163701fa4614ff7fb9a67cf72e

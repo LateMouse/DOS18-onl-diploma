@@ -171,11 +171,12 @@ jobs:
         GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
         credentials_json: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
 
-#    - name: Deploy to GKE
-#      working-directory: ./k8s
-#      run: |
-#        gcloud container clusters get-credentials primary --zone europe-west3-b --project $GOOGLE_PROJECT
-#        kubectl apply -f diploma.yaml
-#      env:
-#       GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
-#       credentials_json: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+    - name: Deploy to GKE
+      working-directory: ./k8s
+      run: |
+        gcloud container clusters get-credentials primary --zone europe-west3-b --project $GOOGLE_PROJECT
+        kubectl create secret generic regcred --from-file=$GOOGLE_APPLICATION_CREDENTIALS
+        kubectl apply -f diploma.yaml
+      env:
+       GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
+       credentials_json: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
