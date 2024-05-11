@@ -130,7 +130,7 @@ jobs:
       with:
         cluster_name: primary
         location: europe-west3-b
-        project_id: $GOOGLE_PROJECT
+        project_id: dos18-onl-dip
         use_auth_provider: true
       env:
         GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
