@@ -120,6 +120,21 @@ jobs:
         location: ${{ secrets.GOOGLE_K8S_LOCATION }}
         cluster: primary
 
+    - name: "Set up Cloud SDK"
+      uses: google-github-actions/setup-gcloud@v0
+      with:
+        install_components: 'gke-gcloud-auth-plugin'
+
+    - name: "Connect to cluster"
+      uses: google-github-actions/get-gke-credentials@v0
+      with:
+        cluster_name: primary
+        location: europe-west3-b
+        project_id: $GOOGLE_PROJECT
+        use_auth_provider: true
+      env:
+        GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
+
     - name: Build the Docker image to GCP Artifact
       working-directory: ./Docker
       run: |
