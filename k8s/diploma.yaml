@@ -51,4 +51,4 @@ spec:
         - name: regcreddocker
       containers:
         - name: nginx
-          image: europe-docker.pkg.dev/dos18-onl-dip/dos18-onl/nginx@sha256:b928dee80ddd5fa5d1c28fc1d17a36d2937694163701fa4614ff7fb9a67cf72e
+          image: europe-docker.pkg.dev/dos18-onl-dip/dos18-onl/nginx:latest
