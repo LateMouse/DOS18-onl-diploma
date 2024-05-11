@@ -177,7 +177,7 @@ jobs:
       working-directory: ./k8s
       run: |
         gcloud auth configure-docker europe-docker.pkg.dev -q
-        gcloud container clusters get-credentials primary --zone europe-west3-b --project $GOOGLE_PROJECT
+        gcloud container clusters get-credentials primary --zone europe-west3 --project $GOOGLE_PROJECT
         kubectl apply -f diploma.yaml
       env:
        GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
