@@ -131,7 +131,7 @@ jobs:
       uses: google-github-actions/get-gke-credentials@v2
       with:
         cluster_name: primary
-        location: europe-west3-b
+        location: europe-west3
         project_id: dos18-onl-dip
         use_auth_provider: true
       env:
