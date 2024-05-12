@@ -11,7 +11,7 @@ resource "google_container_cluster" "primary" {
     "europe-west3-a"
   ]
 
-node_config {
+  node_config {
     oauth_scopes = [
       "https://www.googleapis.com/auth/cloud-platform",
       "https://www.googleapis.com/auth/compute",

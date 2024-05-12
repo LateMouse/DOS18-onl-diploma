@@ -24,7 +24,7 @@ jobs:
     - name: Run Lint Terraform
       uses: actionshub/terraform-lint@main  
 
-    - name: Run Terraform Init
+    - name: Run Terraform Init.
       run: |
         cd terraform
         terraform init
