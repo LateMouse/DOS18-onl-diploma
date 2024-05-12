@@ -137,7 +137,7 @@ jobs:
       run: |
         docker build -t dos18/diploma .
         docker tag dos18/diploma dos18/diploma:latest
-        docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+        docker login -u $DOCKER_USERNAME --password-stdin $DOCKER_PASSWORD
         docker push dos18/diploma
       env:
         username: ${{ secrets.DOCKER_USERNAME }}
