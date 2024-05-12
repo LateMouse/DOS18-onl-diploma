@@ -2,9 +2,9 @@
 ## Указываются настройки провайдера, такие как идентификатор проекта ("project_id"), регион ("region") и зона ("zone"). 
 # Значения для этих настроек берутся из переменных, определенных в файле 0-variables.tf
 provider "google" {
-  project = var.project_id
-  region  = var.region
-  zone    = var.zone
+  project       = var.project_id
+  region        = var.region
+  zone          = var.zone
 }
 
 ## В этом блоке определены настройки Terraform. 
@@ -14,13 +14,13 @@ provider "google" {
 ## В данном случае, это провайдер "google" от HashiCorp с версией, указанной как "~> 5.27". 
 terraform {
   backend "gcs" {
-    bucket = "dos18-onl-tf-state"
-    prefix = "terraforn/state"
+    bucket      = "dos18-onl-tf-state"
+    prefix      = "terraforn/state"  
   }
   required_providers {
     google = {
-      source  = "hashicorp/google"
-      version = "~> 5.27"
+        source  = "hashicorp/google"
+        version = "~> 5.27"
     }
   }
 }

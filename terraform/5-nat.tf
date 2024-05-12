@@ -13,19 +13,19 @@
 ##            что означает, что IP-адрес, созданный с помощью ресурса google_compute_address с именем "nat", будет использоваться для NAT.
 
 resource "google_compute_router_nat" "nat" {
-  name   = "nat"
-  router = google_compute_router.router.name
-  region = var.region
+    name                                = "nat"
+    router                              = google_compute_router.router.name
+    region                              = var.region
 
-  source_subnetwork_ip_ranges_to_nat = "LIST_OF_SUBNETWORKS"
-  nat_ip_allocate_option             = "MANUAL_ONLY"
+    source_subnetwork_ip_ranges_to_nat  = "LIST_OF_SUBNETWORKS"
+    nat_ip_allocate_option              = "MANUAL_ONLY"
 
-  subnetwork {
-    name                    = google_compute_subnetwork.private.id
-    source_ip_ranges_to_nat = ["ALL_IP_RANGES"]
-  }
-
-  nat_ips = [google_compute_address.nat.self_link]
+    subnetwork {
+      name                      = google_compute_subnetwork.private.id
+      source_ip_ranges_to_nat   = ["ALL_IP_RANGES"]
+    }
+  
+  nat_ips   = [google_compute_address.nat.self_link]
 }
 
 ##  resource "google_compute_address" "nat" - определяет ресурс "google_compute_address" с именем "nat", который представляет собой выделенный IP-адрес для использования в NAT.
@@ -39,9 +39,9 @@ resource "google_compute_router_nat" "nat" {
 ##  depends_on - зависимость данного ресурса от других ресурсов. В данном случае, указана зависимость от активации службы "compute.googleapis.com". Это гарантирует, что активация службы будет выполнена перед созданием выделенного IP-адреса для NAT.
 
 resource "google_compute_address" "nat" {
-  name         = "nat"
-  address_type = "EXTERNAL"
-  network_tier = "STANDARD"
+    name            = "nat"
+    address_type    = "EXTERNAL"
+    network_tier    = "STANDARD"
 
-  depends_on = [google_project_service.compute]
+    depends_on      = [google_project_service.compute]
 }

@@ -2,7 +2,7 @@
 ## Этот ресурс представляет собой активацию службы Google Compute Engine в проекте.
 ## Указывается служба "compute.googleapis.com", которая предоставляет возможности виртуальных машин и инфраструктуры облачных вычислений Google Cloud.
 resource "google_project_service" "compute" {
-  service = "compute.googleapis.com"
+    service = "compute.googleapis.com"
 }
 
 ## Определяется ресурс "google_project_service" с именем "container". 
@@ -23,17 +23,17 @@ resource "google_project_service" "container" {
 ##      delete_default_routes_on_create - будут ли удалены маршруты по умолчанию при создании сети. Установленное значение "false" указывает, что маршруты по умолчанию не будут удалены.
 
 resource "google_compute_network" "main" {
-  name                            = "main"
-  routing_mode                    = "REGIONAL"
-  auto_create_subnetworks         = false
-  mtu                             = 1460
-  delete_default_routes_on_create = false
+    name                            = "main"
+    routing_mode                    = "REGIONAL"
+    auto_create_subnetworks         = false
+    mtu                             = 1460
+    delete_default_routes_on_create = false
 
-  ## указываются зависимости от других ресурсов. 
-  ## В данном случае, сеть "main" зависит от активации служб "compute.googleapis.com" и "container.googleapis.com". 
-  ## Таким образом, перед созданием сети будут активированы необходимые службы.
-  depends_on = [
-    google_project_service.compute,
-    google_project_service.container
-  ]
+## указываются зависимости от других ресурсов. 
+## В данном случае, сеть "main" зависит от активации служб "compute.googleapis.com" и "container.googleapis.com". 
+## Таким образом, перед созданием сети будут активированы необходимые службы.
+    depends_on = [ 
+        google_project_service.compute,
+        google_project_service.container
+    ]
 }

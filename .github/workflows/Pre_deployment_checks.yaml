@@ -58,54 +58,54 @@ jobs:
 #        yamllint_strict: false
 #        yamllint_comment: true
     
-#    - name: Build local the Docker image
-#      run: |
-#        cd Docker
-#        docker build -t web .
+    - name: Build local the Docker image
+      run: |
+        cd Docker
+        docker build -t web .
 
-#    - name: Set up Docker Compose
-#      run: |
-#        cd Docker
-#        sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-#        sudo chmod +x /usr/local/bin/docker-compose
-#        sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
-#        sudo apt-get install docker-compose
+    - name: Set up Docker Compose
+      run: |
+        cd Docker
+        sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+        sudo chmod +x /usr/local/bin/docker-compose
+        sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+        sudo apt-get install docker-compose
   
-#    - name: Build and run Docker Compose
-#      run: |
-#        cd Docker
-#        sudo docker-compose -f "docker-compose.yml" up -d --build
+    - name: Build and run Docker Compose
+      run: |
+        cd Docker
+        sudo docker-compose -f "docker-compose.yml" up -d --build
 
-#    - name: Проверка приложения
-#      run: |
-#        response=$(curl -s -o /dev/null -w "%{http_code}" 127.0.0.1:8080/index.html)
-#        if [ $response -eq 200 ]; then
-#          echo "Проверка доступности главной страницы: успешно"
-#        else
-#            echo "Проверка доступности главной страницы, ошибка. Код ответа: $response"
-#            exit 1
-#        fi
-#        response=$(curl -s -o /dev/null -w "%{http_code}" 127.0.0.1:8080/about.html)
-#        if [ $response -eq 200 ]; then
-#          echo "Проверка доступности страницы описания проекта: успешно"
-#        else
-#            echo "Проверка доступности страницы описания проекта, ошибка. Код ответа: $response"
-#            exit 1
-#        fi
-#        response=$(curl -s -o /dev/null -w "%{http_code}" 127.0.0.1:8080/project.html)
-#        if [ $response -eq 200 ]; then
-#          echo "Проверка доступности страницы работы с проектом: успешно"
-#        else
-#            echo "Проверка доступности страницы работы с проектом, ошибка. Код ответа: $response"
-#            exit 1
-#        fi
+    - name: Проверка приложения
+      run: |
+        response=$(curl -s -o /dev/null -w "%{http_code}" 127.0.0.1:8080/index.html)
+        if [ $response -eq 200 ]; then
+          echo "Проверка доступности главной страницы: успешно"
+        else
+            echo "Проверка доступности главной страницы, ошибка. Код ответа: $response"
+            exit 1
+        fi
+        response=$(curl -s -o /dev/null -w "%{http_code}" 127.0.0.1:8080/about.html)
+        if [ $response -eq 200 ]; then
+          echo "Проверка доступности страницы описания проекта: успешно"
+        else
+            echo "Проверка доступности страницы описания проекта, ошибка. Код ответа: $response"
+            exit 1
+        fi
+        response=$(curl -s -o /dev/null -w "%{http_code}" 127.0.0.1:8080/project.html)
+        if [ $response -eq 200 ]; then
+          echo "Проверка доступности страницы работы с проектом: успешно"
+        else
+            echo "Проверка доступности страницы работы с проектом, ошибка. Код ответа: $response"
+            exit 1
+        fi
 
-#    - name: Stop containers
-#      if: always()
-#      run: |
-#        cd Docker
-#        docker-compose -f "docker-compose.yml" down
-#        docker image rm web
+    - name: Stop containers
+      if: always()
+      run: |
+        cd Docker
+        docker-compose -f "docker-compose.yml" down
+        docker image rm web
 
     - name: install the gcloud cli
       uses: google-github-actions/auth@v2
@@ -125,60 +125,52 @@ jobs:
       uses: 'google-github-actions/setup-gcloud@v2'
       with:
         install_components: 'gke-gcloud-auth-plugin'
-        
-
-    - name: "Connect to cluster"
-      uses: google-github-actions/get-gke-credentials@v2
+ 
+    - name: 'Login to Docker Hub'
+      uses: 'docker/login-action@v1'
       with:
-        cluster_name: primary
-        location: europe-west3
-        project_id: dos18-onl-dip
-        use_auth_provider: true
-      env:
-        GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
-        credentials_json: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
 
 
-#!!!    - name: Build the Docker image to GCP Artifact
-#!!!      working-directory: ./Docker
-#!!!      run: |
-#!!!        gcloud auth configure-docker europe-west3-docker.pkg.dev/$GOOGLE_PROJECT/dos18-onl
-#!!!        sudo docker buildx build -t europe-west3-docker.pkg.dev/$GOOGLE_PROJECT/dos18-onl/nginx:latest .
-#!!!      env:
-#!!!        GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
+#    - name: "Connect to cluster"
+#      uses: google-github-actions/get-gke-credentials@v2
+#      with:
+#        cluster_name: primary
+#        location: europe-west3-b
+#        project_id: dos18-onl-dip
+#        use_auth_provider: true
+#      env:
+#        GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
+#        credentials_json: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
 
-    - name: Build the Docker image to GCP Artifact
-      working-directory: ./Docker
-      run: |
-        gcloud auth configure-docker europe-docker.pkg.dev/$GOOGLE_PROJECT/dos18-onl
-        sudo docker buildx build -t europe-docker.pkg.dev/$GOOGLE_PROJECT/dos18-onl/diploma:latest .
-      env:
-        GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
 
-#!!!    - name: Push the Docker image to GCP Artifact
-#!!!      working-directory: ./Docker
-#!!!      run: |
-#!!!        sudo docker login -u _json_key --password-stdin https://europe-west3-docker.pkg.dev < $GOOGLE_APPLICATION_CREDENTIALS
-#!!!        sudo docker push europe-west3-docker.pkg.dev/$GOOGLE_PROJECT/dos18-onl/nginx:latest
-#!!!      env:
-#!!!        GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
-#!!!        credentials_json: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
 
-    - name: Push the Docker image to GCP Artifact!S
-      working-directory: ./Docker
-      run: |
-        sudo docker login -u _json_key --password-stdin https://europe-docker.pkg.dev < $GOOGLE_APPLICATION_CREDENTIALS
-        sudo docker push europe-docker.pkg.dev/$GOOGLE_PROJECT/dos18-onl/diploma:latest
-      env:
-        GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
-        credentials_json: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+#    - name: Build the Docker image to GCP Artifact
+#      working-directory: ./Docker
+#      run: |
+#        gcloud auth configure-docker europe-west3-docker.pkg.dev/$GOOGLE_PROJECT/dos18-onl
+#        sudo docker buildx build -t europe-west3-docker.pkg.dev/$GOOGLE_PROJECT/dos18-onl/nginx:latest .
+#      env:
+#        GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
+#
+#    - name: Push the Docker image to GCP Artifact
+#      working-directory: ./Docker
+#      run: |
+#        sudo docker login -u _json_key --password-stdin https://europe-west3-docker.pkg.dev < $GOOGLE_APPLICATION_CREDENTIALS
+#        sudo docker push europe-west3-docker.pkg.dev/$GOOGLE_PROJECT/dos18-onl/nginx:latest
+#      env:
+#        GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
+#        credentials_json: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
 
-    - name: Deploy to GKE
-      working-directory: ./k8s
-      run: |
-        gcloud auth configure-docker europe-docker.pkg.dev -q
-        gcloud container clusters get-credentials primary --zone europe-west3 --project $GOOGLE_PROJECT
-        kubectl apply -f diploma.yaml
-      env:
-       GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
-       credentials_json: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+#    - name: Deploy to GKE
+#      working-directory: ./k8s
+#      run: |
+#        gcloud auth configure-docker europe-docker.pkg.dev -q
+#        gcloud container clusters get-credentials primary --zone europe-west3-b --project $GOOGLE_PROJECT
+#        gcloud container clusters update primary --region europe-west3-b --project $GOOGLE_PROJECT --enable-image-streaming
+#        sudo docker login -u _json_key --password-stdin https://europe-west3-docker.pkg.dev < $GOOGLE_APPLICATION_CREDENTIALS
+#        kubectl apply -f diploma.yaml
+#      env:
+#       GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
+#       credentials_json: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}

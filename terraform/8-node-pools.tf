@@ -11,9 +11,9 @@
 ##      Они также имеют разрешение на доступ к Google Cloud Platform через определенные oauth-области видимости.
 
 
-#resource "google_service_account" "kubernetes" {
-#  account_id = "kubernetes"
-#}
+resource "google_service_account" "kubernetes" {
+  account_id = "kubernetes"
+}
 
 
 ##  resource "google_container_node_pool" "general" - пул узлов в кластере Kubernetes
@@ -34,29 +34,34 @@
 
 
 resource "google_container_node_pool" "general" {
-  name       = "general"
-  cluster    = google_container_cluster.primary.id
+  name = "general"
+  cluster = google_container_cluster.primary.id
   node_count = 1
 
   management {
-    auto_repair  = true
+    auto_repair = true
     auto_upgrade = true
   }
 
   node_config {
-    preemptible  = false
+    preemptible = false
     machine_type = var.machine_type
 
     labels = {
       role = "general"
     }
 
-    service_account = google_service_account.api.email
+    service_account = google_service_account.kubernetes.email
     oauth_scopes = [
-      "https://www.googleapis.com/auth/cloud-platform"
+        "https://www.googleapis.com/auth/cloud-platform",
+        "https://www.googleapis.com/auth/compute",
+        "https://www.googleapis.com/auth/devstorage.read_only",
+        "https://www.googleapis.com/auth/logging.write",
+        "https://www.googleapis.com/auth/monitoring",
     ]
   }
 }
+
 
 
 ##  resource "google_container_node_pool" "spot" - определяет ресурс который представляет пул узлов в кластере Kubernetes.
@@ -84,11 +89,11 @@ resource "google_container_node_pool" "general" {
 ##  oauth_scopes - список OAuth-областей видимости для узлов пула. 
 
 resource "google_container_node_pool" "spot" {
-  name    = "spot"
+  name = "spot"
   cluster = google_container_cluster.primary.id
 
   management {
-    auto_repair  = true
+    auto_repair = true
     auto_upgrade = true
   }
 
@@ -98,7 +103,7 @@ resource "google_container_node_pool" "spot" {
   }
 
   node_config {
-    preemptible  = true
+    preemptible = true
     machine_type = var.machine_type
 
     labels = {
@@ -106,14 +111,18 @@ resource "google_container_node_pool" "spot" {
     }
 
     taint {
-      key    = "instance_type"
-      value  = "spot"
+      key = "instance_type"
+      value = "spot"
       effect = "NO_SCHEDULE"
     }
 
-    service_account = google_service_account.api.email
+        service_account = google_service_account.kubernetes.email
     oauth_scopes = [
-      "https://www.googleapis.com/auth/cloud-platform"
+        "https://www.googleapis.com/auth/cloud-platform",
+        "https://www.googleapis.com/auth/compute",
+        "https://www.googleapis.com/auth/devstorage.read_only",
+        "https://www.googleapis.com/auth/logging.write",
+        "https://www.googleapis.com/auth/monitoring",
     ]
   }
 }
