@@ -1,184 +1,182 @@
-name: Pre Deployment checks
+#name: Pre Deployment checks
 
-on:
-  push:
-    branches:
-      - main
-      - dev
+#on:
+#  push:
+#    branches:
+#      - main
+#      - dev
 
-jobs:
-  PreDeploymentChecks:
-    runs-on: ubuntu-latest
+#jobs:
+#  PreDeploymentChecks:
+#    runs-on: ubuntu-latest
     
-    defaults:
-      run:
-        shell: bash
+#    defaults:
+#      run:
+#        shell: bash
    
-    steps:
-    - name: Git code checkout
-      uses: actions/checkout@v4
+#    steps:
+#    - name: Git code checkout
+#      uses: actions/checkout@v4
     
-    - name: Set up Terraform
-      uses: hashicorp/setup-terraform@v3
+#    - name: Set up Terraform
+#      uses: hashicorp/setup-terraform@v3
 
-    - name: Run Lint Terraform
-      uses: actionshub/terraform-lint@main  
+#    - name: Run Lint Terraform
+#      uses: actionshub/terraform-lint@main  
 
-    - name: Run Terraform Init.
-      run: |
-        cd terraform
-        terraform init
-      env:
-        GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }} 
+#    - name: Run Terraform Init.
+#      run: |
+#        cd terraform
+#        terraform init
+#      env:
+#        GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }} 
 
-    - name: Run Terraform Plan
-      run: |
-        cd terraform
-        terraform plan -input=false
-      env:
-        GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }} 
+#    - name: Run Terraform Plan
+#      run: |
+#        cd terraform
+#        terraform plan -input=false
+#      env:
+#        GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }} 
 
-    - name: Terraform Apply
-      run: |
-        cd terraform
-        terraform apply -auto-approve -input=false
-      env:
-        GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+#    - name: Terraform Apply
+#      run: |
+#        cd terraform
+#        terraform apply -auto-approve -input=false
+#      env:
+#        GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
 
-    - name: Lint Docker file
-      uses: rusty-actions/dockerfile-linter@v1
-      with:
-        dockerfile: ./Docker/Dockerfile
+#    - name: Lint Docker file
+#      uses: rusty-actions/dockerfile-linter@v1
+#      with:
+#        dockerfile: ./Docker/Dockerfile
        
-    - name: Lint Yaml file
-      uses: karancode/yamllint-github-action@master
-      with:
-        yamllint_file_or_dir: './Docker/'
-        yamllint_strict: false
-        yamllint_comment: true
+#    - name: Lint Yaml file
+#      uses: karancode/yamllint-github-action@master
+#      with:
+#        yamllint_file_or_dir: './Docker/'
+#        yamllint_strict: false
+#        yamllint_comment: true
     
-    - name: Build local the Docker image
-      run: |
-        cd Docker
-        docker build -t web .
+#    - name: Build local the Docker image
+#      run: |
+#        cd Docker
+#        docker build -t web .
 
-    - name: Set up Docker Compose
-      run: |
-        cd Docker
-        sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-        sudo chmod +x /usr/local/bin/docker-compose
-        sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
-        sudo apt-get install docker-compose
+#    - name: Set up Docker Compose
+#      run: |
+#        cd Docker
+#        sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+#        sudo chmod +x /usr/local/bin/docker-compose
+#        sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+#        sudo apt-get install docker-compose
   
-    - name: Build and run Docker Compose
-      run: |
-        cd Docker
-        sudo docker-compose -f "docker-compose.yml" up -d --build
+#    - name: Build and run Docker Compose
+#      run: |
+#        cd Docker
+#        sudo docker-compose -f "docker-compose.yml" up -d --build
 
-    - name: Проверка приложения
-      run: |
-        response=$(curl -s -o /dev/null -w "%{http_code}" 127.0.0.1:8080/index.html)
-        if [ $response -eq 200 ]; then
-          echo "Проверка доступности главной страницы: успешно"
-        else
-            echo "Проверка доступности главной страницы, ошибка. Код ответа: $response"
-            exit 1
-        fi
-        response=$(curl -s -o /dev/null -w "%{http_code}" 127.0.0.1:8080/about.html)
-        if [ $response -eq 200 ]; then
-          echo "Проверка доступности страницы описания проекта: успешно"
-        else
-            echo "Проверка доступности страницы описания проекта, ошибка. Код ответа: $response"
-            exit 1
-        fi
-        response=$(curl -s -o /dev/null -w "%{http_code}" 127.0.0.1:8080/project.html)
-        if [ $response -eq 200 ]; then
-          echo "Проверка доступности страницы работы с проектом: успешно"
-        else
-            echo "Проверка доступности страницы работы с проектом, ошибка. Код ответа: $response"
-            exit 1
-        fi
+#    - name: Проверка приложения
+#      run: |
+#        response=$(curl -s -o /dev/null -w "%{http_code}" 127.0.0.1:8080/index.html)
+#        if [ $response -eq 200 ]; then
+#          echo "Проверка доступности главной страницы: успешно"
+#        else
+#            echo "Проверка доступности главной страницы, ошибка. Код ответа: $response"
+#            exit 1
+#        fi
+#        response=$(curl -s -o /dev/null -w "%{http_code}" 127.0.0.1:8080/about.html)
+#        if [ $response -eq 200 ]; then
+#          echo "Проверка доступности страницы описания проекта: успешно"
+#        else
+#            echo "Проверка доступности страницы описания проекта, ошибка. Код ответа: $response"
+#            exit 1
+#        fi
+#        response=$(curl -s -o /dev/null -w "%{http_code}" 127.0.0.1:8080/project.html)
+#        if [ $response -eq 200 ]; then
+#          echo "Проверка доступности страницы работы с проектом: успешно"
+#        else
+#            echo "Проверка доступности страницы работы с проектом, ошибка. Код ответа: $response"
+#            exit 1
+#        fi
 
-    - name: Stop containers
-      if: always()
-      run: |
-        cd Docker
-        docker-compose -f "docker-compose.yml" down
-        docker image rm web
+#    - name: Stop containers
+#      if: always()
+#      run: |
+#        cd Docker
+#        docker-compose -f "docker-compose.yml" down
+#        docker image rm web
 
-    - name: install the gcloud cli
-      uses: google-github-actions/auth@v2
-      with:
-        project_id: ${{ secrets.GOOGLE_PROJECT }}
-        credentials_json: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+#    - name: install the gcloud cli
+#      uses: google-github-actions/auth@v2
+#      with:
+#        project_id: ${{ secrets.GOOGLE_PROJECT }}
+#        credentials_json: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
 
-    - name: install the gcloud GKE auth plugin
-      uses: imjasonh/gke-auth@v0.1.0
-      with:
-        project: ${{ secrets.GOOGLE_PROJECT }}
-        location: europe-west3-b
-        cluster: primary
+#    - name: install the gcloud GKE auth plugin
+#      uses: imjasonh/gke-auth@v0.1.0
+#      with:
+#        project: ${{ secrets.GOOGLE_PROJECT }}
+#        location: europe-west3-b
+#        cluster: primary
         
-    - name: 'Set up Cloud SDK'
-      uses: 'google-github-actions/setup-gcloud@v2'
-      with:
-        install_components: 'gke-gcloud-auth-plugin'
+#    - name: 'Set up Cloud SDK'
+#      uses: 'google-github-actions/setup-gcloud@v2'
+#      with:
+#        install_components: 'gke-gcloud-auth-plugin'
 
-    - name: "Connect to cluster"
-      uses: google-github-actions/get-gke-credentials@v2
-      with:
-        cluster_name: primary
-        location: europe-west3-b
-        project_id: dos18-onl-dip
-        use_auth_provider: true
-      env:
-        GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
-        credentials_json: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
-  
+#    - name: "Connect to cluster"
+#      uses: google-github-actions/get-gke-credentials@v2
+#      with:
+#        cluster_name: primary
+#        location: europe-west3-b
+#        project_id: dos18-onl-dip
+#        use_auth_provider: true
+#      env:
+#        GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
+#        credentials_json: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
 
+#    - name: 'Login to Docker Hub '
+#      uses: 'docker/login-action@v3'
+#      with:
+#        username: ${{ secrets.DOCKER_USERNAME }}
+#        password: ${{ secrets.DOCKER_PASSWORD }}
 
-    - name: 'Login to Docker Hub '
-      uses: 'docker/login-action@v3'
-      with:
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
+#    - name: 'Build to Docker Hub'
+#      working-directory: ./Docker
+#      run: |
+#        docker build -t dos18/diploma .
+#        docker tag dos18/diploma dos18/diploma:latest
+#      env:
+#        username: ${{ secrets.DOCKER_USERNAME }}
+#        password: ${{ secrets.DOCKER_PASSWORD }}
 
-    - name: 'Build to Docker Hub'
-      working-directory: ./Docker
-      run: |
-        docker build -t dos18/diploma .
-        docker tag dos18/diploma dos18/diploma:latest
-      env:
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
+#    - name: 'Push to Docker Hub'
+#      working-directory: ./Docker
+#      run: |
+#        docker login
+#        docker push dos18/diploma
+#      env:
+#        username: ${{ secrets.DOCKER_USERNAME }}
+#        password: ${{ secrets.DOCKER_PASSWORD }}
 
-    - name: 'Push to Docker Hub'
-      working-directory: ./Docker
-      run: |
-        docker login
-        docker push dos18/diploma
-      env:
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
+#    - name: Deploy to GKE
+#      working-directory: ./k8s
+#      run: |
+#        gcloud container clusters get-credentials primary --zone europe-west3-b --project $GOOGLE_PROJECT
+#        kubectl apply -f diploma.yaml
+#      env:
+#       GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
+#       credentials_json: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+#       username: ${{ secrets.DOCKER_USERNAME }}
+#      password: ${{ secrets.DOCKER_PASSWORD }}
 
-    - name: Deploy to GKE
-      working-directory: ./k8s
-      run: |
-        gcloud container clusters get-credentials primary --zone europe-west3-b --project $GOOGLE_PROJECT
-        kubectl apply -f diploma.yaml
-      env:
-       GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
-       credentials_json: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
-       username: ${{ secrets.DOCKER_USERNAME }}
-       password: ${{ secrets.DOCKER_PASSWORD }}
-
-    - name: "Telegram Notification"
-      uses: "appleboy/telegram-action@master"
-      with:
-        to: ${{ secrets.TELEGRAM_CHAT_ID }}
-        token: ${{ secrets.TELEGRAM_TOKEN }}
-        message: |
-            ${{ github.actor }} created commit:
-            Commit message: ${{ github.event.commits[0].message }}
-            Repository: ${{ github.repository }}
-            See changes: https://github.com/${{ github.repository }}/commit/${{github.sha}}
+#    - name: "Telegram Notification"
+#      uses: "appleboy/telegram-action@master"
+#      with:
+#        to: ${{ secrets.TELEGRAM_CHAT_ID }}
+#        token: ${{ secrets.TELEGRAM_TOKEN }}
+#        message: |
+#            ${{ github.actor }} created commit:
+#            Commit message: ${{ github.event.commits[0].message }}
+#            Repository: ${{ github.repository }}
+#            See changes: https://github.com/${{ github.repository }}/commit/${{github.sha}}
