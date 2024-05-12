@@ -127,20 +127,17 @@ jobs:
 #        install_components: 'gke-gcloud-auth-plugin'
  
     - name: 'Login to Docker Hub '
-      uses: 'docker/login-action@v1'
+      uses: 'docker/login-action@v3'
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
     - name: 'Build and Push to Docker Hub'
-      working-directory: ./Docker
-      run: |
-        docker build -t diploma .
-        docker push diploma:latest
-      env:
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
-
+      uses: docker/build-push-action@v5
+      with:
+        context: ./Docker
+        push: true
+        tags: diploma/demo1:latest
 
 #    - name: "Connect to cluster"
 #      uses: google-github-actions/get-gke-credentials@v2
