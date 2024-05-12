@@ -8,8 +8,9 @@ spec:
   selector:
     app: nginx
   ports:
-  - port: 80
-    targetPort: 80
+    - port: 80
+      targetPort: 80
+
 ---
 apiVersion: apps/v1
 kind: Deployment
