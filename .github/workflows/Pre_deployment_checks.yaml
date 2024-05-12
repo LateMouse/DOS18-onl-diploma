@@ -18,94 +18,93 @@ jobs:
     - name: Git code checkout
       uses: actions/checkout@v4
     
-#    - name: Set up Terraform
-#      uses: hashicorp/setup-terraform@v3
+    - name: Set up Terraform
+      uses: hashicorp/setup-terraform@v3
 
-#    - name: Run Lint Terraform
-#      uses: actionshub/terraform-lint@main  
+    - name: Run Lint Terraform
+      uses: actionshub/terraform-lint@main  
 
-#    - name: Run Terraform Init
-#      run: |
-#        cd terraform
-#        terraform init
-#      env:
-#        GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }} 
+    - name: Run Terraform Init
+      run: |
+        cd terraform
+        terraform init
+      env:
+        GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }} 
 
-#    - name: Run Terraform Plan
-#      run: |
-#        cd terraform
-#        terraform plan -input=false
-#      env:
-#        GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }} 
+    - name: Run Terraform Plan
+      run: |
+        cd terraform
+        terraform plan -input=false
+      env:
+        GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }} 
 
-#    - name: Terraform Apply
-#      run: |
-#        cd terraform
-#        terraform apply -auto-approve -input=false
-#      env:
-#        GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+    - name: Terraform Apply
+      run: |
+        cd terraform
+        terraform apply -auto-approve -input=false
+      env:
+        GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
 
-
-#    - name: Lint Docker file
-#      uses: rusty-actions/dockerfile-linter@v1
-#      with:
-#        dockerfile: ./Docker/Dockerfile
+    - name: Lint Docker file
+      uses: rusty-actions/dockerfile-linter@v1
+      with:
+        dockerfile: ./Docker/Dockerfile
        
-#    - name: Lint Yaml file
-#      uses: karancode/yamllint-github-action@master
-#      with:
-#        yamllint_file_or_dir: './Docker/'
-#        yamllint_strict: false
-#        yamllint_comment: true
+    - name: Lint Yaml file
+      uses: karancode/yamllint-github-action@master
+      with:
+        yamllint_file_or_dir: './Docker/'
+        yamllint_strict: false
+        yamllint_comment: true
     
-#    - name: Build local the Docker image
-#      run: |
-#        cd Docker
-#        docker build -t web .
+    - name: Build local the Docker image
+      run: |
+        cd Docker
+        docker build -t web .
 
-#    - name: Set up Docker Compose
-#      run: |
-#        cd Docker
-#        sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-#        sudo chmod +x /usr/local/bin/docker-compose
-#        sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
-#        sudo apt-get install docker-compose
+    - name: Set up Docker Compose
+      run: |
+        cd Docker
+        sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+        sudo chmod +x /usr/local/bin/docker-compose
+        sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+        sudo apt-get install docker-compose
   
-#    - name: Build and run Docker Compose
-#      run: |
-#        cd Docker
-#        sudo docker-compose -f "docker-compose.yml" up -d --build
+    - name: Build and run Docker Compose
+      run: |
+        cd Docker
+        sudo docker-compose -f "docker-compose.yml" up -d --build
 
-#    - name: Проверка приложения
-#      run: |
-#        response=$(curl -s -o /dev/null -w "%{http_code}" 127.0.0.1:8080/index.html)
-#        if [ $response -eq 200 ]; then
-#          echo "Проверка доступности главной страницы: успешно"
-#        else
-#            echo "Проверка доступности главной страницы, ошибка. Код ответа: $response"
-#            exit 1
-#        fi
-#        response=$(curl -s -o /dev/null -w "%{http_code}" 127.0.0.1:8080/about.html)
-#        if [ $response -eq 200 ]; then
-#          echo "Проверка доступности страницы описания проекта: успешно"
-#        else
-#            echo "Проверка доступности страницы описания проекта, ошибка. Код ответа: $response"
-#            exit 1
-#        fi
-#        response=$(curl -s -o /dev/null -w "%{http_code}" 127.0.0.1:8080/project.html)
-#        if [ $response -eq 200 ]; then
-#          echo "Проверка доступности страницы работы с проектом: успешно"
-#        else
-#            echo "Проверка доступности страницы работы с проектом, ошибка. Код ответа: $response"
-#            exit 1
-#        fi
+    - name: Проверка приложения
+      run: |
+        response=$(curl -s -o /dev/null -w "%{http_code}" 127.0.0.1:8080/index.html)
+        if [ $response -eq 200 ]; then
+          echo "Проверка доступности главной страницы: успешно"
+        else
+            echo "Проверка доступности главной страницы, ошибка. Код ответа: $response"
+            exit 1
+        fi
+        response=$(curl -s -o /dev/null -w "%{http_code}" 127.0.0.1:8080/about.html)
+        if [ $response -eq 200 ]; then
+          echo "Проверка доступности страницы описания проекта: успешно"
+        else
+            echo "Проверка доступности страницы описания проекта, ошибка. Код ответа: $response"
+            exit 1
+        fi
+        response=$(curl -s -o /dev/null -w "%{http_code}" 127.0.0.1:8080/project.html)
+        if [ $response -eq 200 ]; then
+          echo "Проверка доступности страницы работы с проектом: успешно"
+        else
+            echo "Проверка доступности страницы работы с проектом, ошибка. Код ответа: $response"
+            exit 1
+        fi
 
-#    - name: Stop containers
-#      if: always()
-#      run: |
-#        cd Docker
-#        docker-compose -f "docker-compose.yml" down
-#        docker image rm web
+    - name: Stop containers
+      if: always()
+      run: |
+        cd Docker
+        docker-compose -f "docker-compose.yml" down
+        docker image rm web
 
     - name: install the gcloud cli
       uses: google-github-actions/auth@v2
@@ -119,7 +118,6 @@ jobs:
         project: ${{ secrets.GOOGLE_PROJECT }}
         location: europe-west3-b
         cluster: primary
-
         
     - name: 'Set up Cloud SDK'
       uses: 'google-github-actions/setup-gcloud@v2'
