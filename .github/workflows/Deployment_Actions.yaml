@@ -204,14 +204,14 @@ jobs:
              See changes: https://github.com/${{ github.repository }}/commit/${{github.sha}}
 
       - name: "Notification: Telegram Notification Deploying Application"
-         uses: "appleboy/telegram-action@master"
-         if: |
-           github.ref == 'refs/heads/main' 
-         with:
-           to: ${{ secrets.TELEGRAM_CHAT_ID }}
-           token: ${{ secrets.TELEGRAM_TOKEN }}
-           message: |
-              ${{ github.actor }} created deploying application:
-              Commit message: ${{ github.event.commits[0].message }}
-              Repository: ${{ github.repository }}
-              See changes: https://github.com/${{ github.repository }}/commit/${{github.sha}}
+        uses: "appleboy/telegram-action@master"
+        if: |
+          github.ref == 'refs/heads/main'
+        with:
+          to: ${{ secrets.TELEGRAM_CHAT_ID }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          message: |
+            ${{ github.actor }} created deploying application:
+            Commit message: ${{ github.event.commits[0].message }}
+            Repository: ${{ github.repository }}
+            See changes: https://github.com/${{ github.repository }}/commit/${{github.sha}}
