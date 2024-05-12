@@ -49,4 +49,4 @@ spec:
     spec:
       containers:
         - name: nginx
-          image: europe-docker.pkg.dev/dos18-onl-dip/dos18-onl/diploma/nginx:latest
+          image: dos18/diploma:latest
