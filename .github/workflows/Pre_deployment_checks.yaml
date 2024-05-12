@@ -135,8 +135,8 @@ jobs:
     - name: 'Build and Push to Docker Hub'
       working-directory: ./Docker
       run: |
-        docker build -t diploma .
-        docker tag nginx dos18/diploma:latest
+        docker build -t dos18/diploma .
+        docker tag dos18/diploma dos18/diploma:latest
         docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
         docker push dos18/diploma
       env:
