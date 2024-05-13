@@ -150,5 +150,34 @@ https://github.com/HouariZegai/Calculator
 - TELEGRAM_CHAT_ID – ID группы Telegram
 - TELEGRAM_TOKEN – токен созданный BotFather
 
-### 4. Этапы выполнения проекта:
+### 4. Структура и описание шагов проекта:
+Структура проекта:
+```
+DOS18-onl-diploma/
+├── Docker
+│   ├── docker-compose.yml
+│   ├── Dockerfile
+│   └── WebSite
+│       ├── about.html
+│       ├── images
+│       │   ├── devops.jpg
+│       │   └── LateMouse.jpg
+│       ├── index.html
+│       └── project.html
+├── k8s
+│   └── diploma.yaml
+├── Pre_deployment_checks.yaml
+├── README.md
+└── terraform
+    ├── 0-variables.tf
+    ├── 1-provider.tf
+    ├── 2-vpc.tf
+    ├── 3-subnets.tf
+    ├── 4-router.tf
+    ├── 5-nat.tf
+    ├── 6-firewalls.tf
+    ├── 7-kubernetes.tf
+    ├── 8-node-pools.tf
+    └── 9-service-account.tf
+```
 
