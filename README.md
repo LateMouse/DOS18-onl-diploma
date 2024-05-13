@@ -120,8 +120,35 @@ https://github.com/HouariZegai/Calculator
 
 ### 3. Предварительные условия для реализации проекта:
 
-3.1 Наличие действующего проекта Google Cloud Platform <br>
+3.1 Наличие действующего проекта Google Cloud Platform <br> <br>
+
 3.2 В проекте должны быть включены следующие API провайдера: <br>
 - Kubernetes Engine API
-- Compute Engine API 
+- Compute Engine API
+- Cloud Build API
+
+3.3 Предварительно создан bucket для хранения файла состояния terraform <br> <br>
+
+3.4 В проекте Google Cloud Platform создан service account с предварительно сгенерированным JSON–ключом и обладающим следующими привелегиями:
+- Compute Storage Admin
+- Kubernetes Engine Cluster Admin
+- Kubernetes Engine Developer
+- Storage Admin
+- Storage Folder Admin
+- Storage Object Admin
+
+3.5 Созданный репозиторий в Docker Hub
+
+3.6 Создание посредством BotFather бота для оповещений telegram
+
+3.7 Наличие следующих секретов в GitHub:
+- DOCKER_PASSWORD – токен доступа сгенерированный в Docker Hub
+- DOCKER_USERNAME – имя учетной записи в Docker Hub
+- GOOGLE_APPLICATION_CREDENTIALS – данне JSON-файла сервисного аккаунта Google Cloud Platform
+- GOOGLE_CREDENTIALS – данне JSON-файла сервисного аккаунта Google Cloud Platform
+- GOOGLE_PROJECT – ID проекта Google Cloud Platform
+- TELEGRAM_CHAT_ID – ID группы Telegram
+- TELEGRAM_TOKEN – токен созданный BotFather
+
+### 4. Этапы выполнения проекта:
 
