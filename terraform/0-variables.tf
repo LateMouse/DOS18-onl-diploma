@@ -19,5 +19,3 @@ variable "machine_type" {
   description = "Тип разворачиваемых машин"
   default     = "e2-small"
 }
-
-
