@@ -150,7 +150,7 @@ https://github.com/HouariZegai/Calculator
 - TELEGRAM_CHAT_ID – ID группы Telegram
 - TELEGRAM_TOKEN – токен созданный BotFather
 
-### 4. Структура и описание шагов проекта:
+### 4. !!!!!!!!!!!!!!Структура и описание шагов проекта:
 Структура проекта:
 ```
 DOS18-onl-diploma/
@@ -331,4 +331,213 @@ resource "google_compute_firewall" "allow-ssh" {
 
   source_ranges = ["0.0.0.0/0"]
 }
+```
+
+##### 4.1.8. Файл /terraform/7-kubernetes.tf
+Цель данной конфигурации - настроить кластер Kubernetes с одним узлом, подключенным к указанным сети и подсети, и настроить его с учетом различных опций, таких как отключение дополнений, настройка идентификации нагрузки и приватного кластера.
+```tf
+resource "google_container_cluster" "primary" {
+  name                     = "primary"
+  location                 = var.zone
+  remove_default_node_pool = true
+  initial_node_count       = 1
+  network                  = google_compute_network.main.self_link
+  subnetwork               = google_compute_subnetwork.private.self_link
+  networking_mode          = "VPC_NATIVE"
+
+  node_locations = [
+    "europe-west3-a"
+  ]
+
+  addons_config {
+    http_load_balancing {
+      disabled = true
+    }
+    horizontal_pod_autoscaling {
+      disabled = true
+    }
+  }
+
+  release_channel {
+    channel = "REGULAR"
+  }
+
+  workload_identity_config {
+    workload_pool = "latemouse.svc.id.goog"
+  }
+
+  ip_allocation_policy {
+    cluster_secondary_range_name  = "k8s-pod-range"
+    services_secondary_range_name = "k8s-service-range"
+  }
+
+  private_cluster_config {
+    enable_private_nodes    = true
+    enable_private_endpoint = false
+    master_ipv4_cidr_block  = "172.16.0.0/28"
+  }
+}
+```
+
+##### 4.1.9. Файл /terraform/8-node-pools.tf
+Цель данной конфигурации - настроить пулы узлов в кластере Kubernetes с различными параметрами, такими как тип машины, автоматическое восстановление и обновление, метки и сервисные аккаунты. <br>
+Пул "general" – предназначен для общего использования и содержит один узел. Включено автоматическое восстановление и автоматическое обновление узла. <br>
+Пул "spot" – предназначен для использования виртуальных машин. Использует автомасштабирование и может иметь от 0 до 10 узлов. Узлы помечены аннотацией "taint" с эффектом "NO_SCHEDULE", что означает, что поды не будут планироваться на эти узлы, если они не требуют явного использования таких узлов.  <br>
+Оба пула узлов имеют разрешение на доступ к Google Cloud Platform через определенные oauth-области видимости.
+```tf
+resource "google_service_account" "kubernetes" {
+  account_id = "kubernetes"
+}
+
+resource "google_container_node_pool" "general" {
+  name       = "general"
+  cluster    = google_container_cluster.primary.id
+  node_count = 1
+
+  management {
+    auto_repair  = true
+    auto_upgrade = true
+  }
+
+  node_config {
+    preemptible  = false
+    machine_type = var.machine_type
+
+    labels = {
+      role = "general"
+    }
+
+    service_account = google_service_account.kubernetes.email
+    oauth_scopes = [
+      "https://www.googleapis.com/auth/cloud-platform"
+    ]
+  }
+}
+
+resource "google_container_node_pool" "spot" {
+  name    = "spot"
+  cluster = google_container_cluster.primary.id
+
+  management {
+    auto_repair  = true
+    auto_upgrade = true
+  }
+
+  autoscaling {
+    min_node_count = 0
+    max_node_count = 10
+  }
+
+  node_config {
+    preemptible  = true
+    machine_type = var.machine_type
+
+    labels = {
+      team = "devops"
+    }
+
+    taint {
+      key    = "instance_type"
+      value  = "spot"
+      effect = "NO_SCHEDULE"
+    }
+
+    service_account = google_service_account.kubernetes.email
+    oauth_scopes = [
+      "https://www.googleapis.com/auth/cloud-platform"
+    ]
+  }
+}
+```
+
+#### 4.2 Описание конфигурации Docker и Docker Compose
+В директории "./Docker" содержатся конфигурационные файлы для сборки образа Docker и тестирования развертывания образа. Структура данной директории включает следующие директории и файлы:
+
+##### 4.2.1. Директория /Docker/WebSite/*
+В директории WebSite располагается набор html-страниц и изображений, предназначенных для публикации в Docker-образе с использованием веб-сервера Nginx. Этот образ будет дальше развертываться в облачной среде.
+```
+WebSite/
+├── about.html
+├── images
+│   ├── devops.jpg
+│   └── LateMouse.jpg
+├── index.html
+└── project.html
+```
+
+##### !!!!!!!!!!!!!!!! 4.2.2. Файл /Docker/Dockerfile
+Цель данного Dockerfile - создать образ, содержащий указанные html-страницы и изображения, которые будут доступны через веб-сервер Nginx. Этот образ может быть использован для развертывания веб-сайта или приложения, основанного на Nginx, в контейнерной среде.
+```Dockerfile
+FROM nginx:1.25.5
+
+COPY WebSite/index.html /usr/share/nginx/html/index.html
+COPY WebSite/about.html /usr/share/nginx/html/about.html
+COPY WebSite/project.html /usr/share/nginx/html/project.html
+COPY WebSite/images/LateMouse.jpg /usr/share/nginx/html/images/LateMouse.jpg
+COPY WebSite/images/devops.jpg /usr/share/nginx/html/images/devops.jpg
+```
+
+##### 4.2.2. Файл /Docker/docker-compose.yml
+Цель данного docker-compose.yml - определить и настроить контейнер, созданный на основе образа "web", который предварительно собирается на GitHub Runner, чтобы он был доступен на порту 8080 хостовой машины.
+```yaml
+---
+version: '3'
+services:
+  web:
+    image: web
+    ports:
+      - 8080:80
+```
+
+#### 4.3 Описание конфигурации Kubernetes, diploma.yaml:
+В директории "./k8s" содержится конфигурационный YAML файл для сборки приложения в среде Kubernetes. <br>
+Цель данного файла "diploma.yaml" - описать и настроить ресурсы Kubernetes (Service и Deployment) для развертывания и управления приложением Nginx. Это позволяет автоматизировать масштабирование, управление и обеспечение доступности сервиса в Kubernetes-кластере. Основные аспекты кода: <br>
+Описание ресурса "Service": <br>
+- Используется API-версия "v1" для объекта "Service".
+- Ресурс "Service" определяет набор правил доступа к сервису. В данном коде создается сервис с именем "nginx".
+- Указывается тип сервиса "LoadBalancer", что позволяет использовать балансировщик нагрузки для распределения трафика на поды сервиса.
+- Селектор "app: nginx" связывает сервис с подами, помеченными меткой "app: nginx".
+- Порт 80 (хостовой порт) направляется на целевой порт 80 внутри подов.
+
+Описание ресурса "Deployment": <br>
+- Используется API-версия "apps/v1" для объекта "Deployment".
+- Ресурс "Deployment" определяет спецификацию развертывания приложения. В данном коде создается развертывание с именем "nginx".
+- Метки "app: nginx" связывают развертывание с сервисом и подами, относящимися к нему.
+- Указывается желаемое количество реплик (подов) - 2.
+- В шаблоне пода определяются контейнеры. В данном случае, используется контейнер с именем "nginx" и образом Docker Hub "dos18/diploma:latest".
+
+```yaml
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx
+spec:
+  type: LoadBalancer
+  selector:
+    app: nginx
+  ports:
+    - port: 80
+      targetPort: 80
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+  labels:
+    app: nginx
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - name: nginx
+          image: dos18/diploma:latest
 ```
