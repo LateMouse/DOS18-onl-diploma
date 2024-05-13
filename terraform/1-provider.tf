@@ -14,7 +14,7 @@ provider "google" {
 ## В данном случае, это провайдер "google" от HashiCorp с версией, указанной как "~> 5.27". 
 terraform {
   backend "gcs" {
-    bucket = "dos18-onl-tf-state"
+    bucket = "latemouse-tf-state"
     prefix = "terraforn/state"
   }
   required_providers {

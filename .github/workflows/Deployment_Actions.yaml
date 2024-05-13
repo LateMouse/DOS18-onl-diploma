@@ -143,7 +143,7 @@ jobs:
         with:
           cluster_name: primary
           location: europe-west3-b
-          project_id: dos18-onl-dip
+          project_id: latemouse
           use_auth_provider: true
         env:
           GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
@@ -157,8 +157,6 @@ jobs:
 
       - name: "Docker: Build Docker Image for Docker Hub Repository"
         working-directory: ./Docker
-        if: |
-          github.ref == 'refs/heads/main' 
         run: |
           docker build -t dos18/diploma .
           docker tag dos18/diploma dos18/diploma:latest
@@ -168,8 +166,6 @@ jobs:
 
       - name: "Docker: Push Docker Image to Docker Hub Repository"
         working-directory: ./Docker
-        if: |
-          github.ref == 'refs/heads/main' 
         run: |
           docker login
           docker push dos18/diploma

@@ -2,7 +2,7 @@
 
 variable "project_id" {
   description = "ID проекта Google Cloud"
-  default     = "dos18-onl-dip"
+  default     = "latemouse"
 }
 
 variable "region" {
