@@ -809,9 +809,11 @@ jobs:
 #### [Ветка main]:
  В процессе запуска ветки main в рамках конвейера выполнены все этапы сборки, за исключением оповещения о изменении кода проекта, вместо этого отправляется уведомление о деплое проекта: <br> <br>
 
-Выполнение pipeline при коммите в ветку main: <br>
+
+Выполнение pipeline при слиянии с веткой main: <br>
 ![изображение](https://github.com/LateMouse/DOS18-onl-diploma/assets/114028634/7d0a6b3b-865b-4347-bcdd-fdaf42ffc290) <br>
-![изображение](https://github.com/LateMouse/DOS18-onl-diploma/assets/114028634/2784784c-891c-4ac6-9524-68fc66e2fb3e) <br> <br>
+![изображение](https://github.com/LateMouse/DOS18-onl-diploma/assets/114028634/2784784c-891c-4ac6-9524-68fc66e2fb3e) <br>
+![изображение](https://github.com/LateMouse/DOS18-onl-diploma/assets/114028634/5f6c2699-26f0-4cd2-9e23-384e87bbadd2) <br> <br>
 
 По результату выполнения отправляется уведомление в Telegram о внесении изменений в и ссылкой для просмотра изменений: <br>
 ![изображение](https://github.com/LateMouse/DOS18-onl-diploma/assets/114028634/fefd63ef-c29f-4db2-a255-a64e8fcb9d3f) <br> <br>
