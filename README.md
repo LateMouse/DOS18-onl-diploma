@@ -126,6 +126,7 @@ https://github.com/HouariZegai/Calculator
 - Kubernetes Engine API
 - Compute Engine API
 - Cloud Build API
+- Cloud Resource Manager API
 
 3.3 Предварительно создан bucket для хранения файла состояния terraform <br> <br>
 
@@ -541,3 +542,269 @@ spec:
         - name: nginx
           image: dos18/diploma:latest
 ```
+
+### 5. Выполнение проекта:
+Проект состоит из двух веток: main и dev. <br>
+Ветка dev предназначена исключительно для проверки внесенных изменений и не влияет на активный проект. Ветка main имеет непосредственное влияние на активный процесс развертывания инфраструктуры в облачном провайдере и конфигурацию, а также на публикацию приложения в облаке. Запуск GitHub Actions происходит при коммите в основную ветку (main) или при слиянии (merge) dev ветки с основной. Все операции выполняются при помощи CI GitHub Actions на основе файла Deployment_Actions.yaml. <br>
+Файл "Deployment_Actions.yaml" содержит описание действий для автоматического развертывания приложения. Ниже приведено общее описание кода:  <br>
+- Настройка событий, на которые реагирует автоматизированный процесс развертывания. В данном случае процесс запускается при push в ветки "main" и "dev".
+- Определение задачи "DeploymentActions", выполняющейся на операционной системе Ubuntu.
+- Настройка параметров выполнения для задачи, включая использование оболочки bash.
+- Определение последовательности шагов, которые нужно выполнить: <br>  <br>
+        Проверка кода из репозитория Git. <br>
+        Запуск проверки синтаксиса Terraform. <br>
+        Запуск проверки синтаксиса файла Dockerfile. <br>
+        Запуск проверки синтаксиса YAML-файлов Docker Compose. <br>
+        Запуск проверки синтаксиса YAML-файлов Kubernetes. <br>
+        Установка и настройка Terraform. <br>
+        Установка и настройка Docker Compose. <br>
+        Установка и настройка Google Cloud CLI. <br>
+        Выполнение инициализации Terraform. <br>
+        Выполнение планирования Terraform. <br>
+
+- Применение изменений, если ветка - "main".
+        Сборка Docker-образа. <br>
+        Сборка и запуск Docker Compose. <br>
+        Проверка доступности различных URL-адресов на локальном Docker-образе. <br>
+        Остановка контейнеров и удаление Docker-образа. <br>
+        Настройка аутентификации для использования Google Kubernetes Engine. <br>
+        Установка Google Cloud SDK. <br>
+        Подключение к кластеру Google Kubernetes Engine. <br>
+        Аутентификация в Docker Hub. <br>
+        Сборка и маркировка Docker-образа для репозитория Docker Hub. <br>
+        Отправка Docker-образа в репозиторий Docker Hub. <br>
+        Развертывание приложения на кластере Google Kubernetes Engine. <br>
+        Уведомление в Telegram о развертывании приложения на ветке "main".  <br>
+
+ <br>  <br>
+
+Файл Deployment_Actions.yaml:
+```yaml
+name: Deployment actions
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+
+jobs:
+  DeploymentActions:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: "Git code checkout"
+        uses: actions/checkout@v4
+
+      - name: "Linter: Run Lint Terraform"
+        uses: actionshub/terraform-lint@main
+
+      - name: "Linter: Run Lint Dockerfile"
+        uses: rusty-actions/dockerfile-linter@v1
+        with:
+          dockerfile: ./Docker/Dockerfile
+
+      - name: "Linter: Run Lint Yaml file DockerCompose"
+        uses: karancode/yamllint-github-action@master
+        with:
+          yamllint_file_or_dir: './Docker/'
+          yamllint_strict: false
+          yamllint_comment: true
+
+      - name: "Linter: Run Lint Yaml file Kubernetes"
+        uses: karancode/yamllint-github-action@master
+        with:
+          yamllint_file_or_dir: './k8s/'
+          yamllint_strict: false
+          yamllint_comment: true
+
+      - name: "Install: Setting up Terraform"
+        uses: hashicorp/setup-terraform@v3
+
+      - name: "Install: Setting up Docker Compose"
+        working-directory: ./Docker
+        run: |
+          sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          sudo chmod +x /usr/local/bin/docker-compose
+          sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+          sudo apt-get install docker-compose
+
+      - name: "Install: Setting up the Google Cloud CLI"
+        uses: google-github-actions/auth@v2
+        with:
+          project_id: ${{ secrets.GOOGLE_PROJECT }}
+          credentials_json: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+
+      - name: "Terraform: Runnig Terraform Init"
+        working-directory: ./terraform
+        run: |
+          terraform init
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+
+      - name: "Terraform: Runnig Terraform Plan"
+        working-directory: ./terraform
+        run: |
+          terraform plan -input=false
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+
+      - name: "Terraform: Runnig Terraform Apply"
+        working-directory: ./terraform
+        if: |
+          github.ref == 'refs/heads/main'
+        run: |
+          terraform apply -auto-approve -input=false
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+
+      - name: "Docker: Build Docker Image"
+        working-directory: ./Docker
+        run: |
+          docker build -t web .
+
+      - name: "Docker: Build and Run Docker Compose"
+        working-directory: ./Docker
+        run: |
+          sudo docker-compose -f "docker-compose.yml" up -d --build
+
+      - name: "Test: HTTP Request Verification from local Docker Image"
+        run: |
+          response=$(curl -s -o /dev/null -w "%{http_code}" 127.0.0.1:8080/index.html)
+          if [ $response -eq 200 ]; then
+            echo "Проверка доступности главной страницы: успешно"
+          else
+              echo "Проверка доступности главной страницы, ошибка. Код ответа: $response"
+              exit 1
+          fi
+          response=$(curl -s -o /dev/null -w "%{http_code}" 127.0.0.1:8080/about.html)
+          if [ $response -eq 200 ]; then
+            echo "Проверка доступности страницы описания проекта: успешно"
+          else
+              echo "Проверка доступности страницы описания проекта, ошибка. Код ответа: $response"
+              exit 1
+          fi
+          response=$(curl -s -o /dev/null -w "%{http_code}" 127.0.0.1:8080/project.html)
+          if [ $response -eq 200 ]; then
+            echo "Проверка доступности страницы работы с проектом: успешно"
+          else
+             echo "Проверка доступности страницы работы с проектом, ошибка. Код ответа: $response"
+              exit 1
+          fi
+        
+      - name: "Docker: Stop local Containers and Remove local Docker Image"
+        working-directory: ./Docker
+        run: |
+          docker-compose -f "docker-compose.yml" down
+          docker image rm web
+
+      - name: "Install: Setting up the Google Kubernetes Engine Authentication Plugin"
+        if: |
+          github.ref == 'refs/heads/main'  
+        uses: imjasonh/gke-auth@v0.1.0
+        with:
+          project: ${{ secrets.GOOGLE_PROJECT }}
+          location: europe-west3-b
+          cluster: primary
+
+      - name: "Install: Setting up the Google Cloud SDK"
+        if: |
+          github.ref == 'refs/heads/main' 
+        uses: 'google-github-actions/setup-gcloud@v2'
+        with:
+          install_components: 'gke-gcloud-auth-plugin'
+
+      - name: "Test: Connect to Google Kubernetes Engine Cluster"
+        if: |
+          github.ref == 'refs/heads/main' 
+        uses: google-github-actions/get-gke-credentials@v2
+        with:
+          cluster_name: primary
+          location: europe-west3-b
+          project_id: latemouse
+          use_auth_provider: true
+        env:
+          GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
+          credentials_json: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+
+      - name: "Test: Login to Docker Hub"
+        uses: 'docker/login-action@v3'
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: "Docker: Build Docker Image for Docker Hub Repository"
+        working-directory: ./Docker
+        run: |
+          docker build -t dos18/diploma .
+          docker tag dos18/diploma dos18/diploma:latest
+        env:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: "Docker: Push Docker Image to Docker Hub Repository"
+        working-directory: ./Docker
+        run: |
+          docker login
+          docker push dos18/diploma
+        env:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: "Deploy: Deploy Application to Google Kubernetes Engine Cluster"
+        working-directory: ./k8s
+        if: |
+          github.ref == 'refs/heads/main' 
+        run: |
+          gcloud container clusters get-credentials primary --zone europe-west3-b --project $GOOGLE_PROJECT
+          kubectl apply -f diploma.yaml
+        env:
+         GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
+         credentials_json: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+         username: ${{ secrets.DOCKER_USERNAME }}
+         password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: "Notification: Telegram Notification from Dev Branch"
+        uses: "appleboy/telegram-action@master"
+        if: |
+          github.ref == 'refs/heads/dev' 
+        with:
+          to: ${{ secrets.TELEGRAM_CHAT_ID }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          message: |
+             ${{ github.actor }} created commit:
+             Commit message: ${{ github.event.commits[0].message }}
+             Repository: ${{ github.repository }}
+             See changes: https://github.com/${{ github.repository }}/commit/${{github.sha}}
+
+      - name: "Notification: Telegram Notification Deploying Application"
+        uses: "appleboy/telegram-action@master"
+        if: |
+          github.ref == 'refs/heads/main'
+        with:
+          to: ${{ secrets.TELEGRAM_CHAT_ID }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          message: |
+            ${{ github.actor }} created deploying application:
+            Commit message: ${{ github.event.commits[0].message }}
+            Repository: ${{ github.repository }}
+            See changes: https://github.com/${{ github.repository }}/commit/${{github.sha}}
+```
+
+
+#### [Ветка dev]:
+В процессе запуска ветки dev в рамках конвейера выполнены следующие этапы, специально предназначенные для данной ветки. Операции, связанные с изменением инфраструктуры, развертыванием кластера Kubernetes и публикацией приложения, не выполняются в данном контексте: <br> <br>
+
+Выполнение pipeline при коммите в ветку dev: <br>
+![изображение](https://github.com/LateMouse/DOS18-onl-diploma/assets/114028634/382bc699-4804-4523-830e-34e51c07c457) <br>
+![изображение](https://github.com/LateMouse/DOS18-onl-diploma/assets/114028634/9ddfae28-06b4-48ef-99c2-02ce7c504997) <br> <br>
+
+По результату выполнения отправляется уведомление в Telegram о внесении изменений в и ссылкой для просмотра изменений: <br>
+![изображение](https://github.com/LateMouse/DOS18-onl-diploma/assets/114028634/fd57047c-6134-487e-94a2-fde1b0c26127) <br> <br>
+
+#### [Ветка main]:
+ В процессе запуска ветки main в рамках конвейера выполнены все этапы сборки, за исключением оповещения о изменении кода проекта, вместо этого отправляется уведомление о деплое проекта:
