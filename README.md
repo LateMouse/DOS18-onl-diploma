@@ -151,7 +151,7 @@ https://github.com/HouariZegai/Calculator
 - TELEGRAM_CHAT_ID – ID группы Telegram
 - TELEGRAM_TOKEN – токен созданный BotFather
 
-### 4. !!!!!!!!!!!!!!Структура и описание шагов проекта:
+### 4. Структура и описание шагов проекта:
 Структура проекта:
 ```
 DOS18-onl-diploma/
@@ -161,8 +161,11 @@ DOS18-onl-diploma/
 │   └── WebSite
 │       ├── about.html
 │       ├── images
-│       │   ├── devops.jpg
-│       │   └── LateMouse.jpg
+│       │   ├── dec1.png
+│       │   ├── dec2.png
+│       │   ├── devops.png
+│       │   ├── LateMouse.jpg
+│       │   └── top.jpg
 │       ├── index.html
 │       └── project.html
 ├── k8s
@@ -179,6 +182,8 @@ DOS18-onl-diploma/
     ├── 6-firewalls.tf
     ├── 7-kubernetes.tf
     └── 8-node-pools.tf
+
+5 directories, 22 files
 ```
 
 #### 4.1 Описание конфигурации Terraform
@@ -460,13 +465,18 @@ resource "google_container_node_pool" "spot" {
 WebSite/
 ├── about.html
 ├── images
-│   ├── devops.jpg
-│   └── LateMouse.jpg
+│   ├── dec1.png
+│   ├── dec2.png
+│   ├── devops.png
+│   ├── LateMouse.jpg
+│   └── top.jpg
 ├── index.html
 └── project.html
+
+1 directory, 8 files
 ```
 
-##### !!!!!!!!!!!!!!!! 4.2.2. Файл /Docker/Dockerfile
+##### 4.2.2. Файл /Docker/Dockerfile
 Цель данного Dockerfile - создать образ, содержащий указанные html-страницы и изображения, которые будут доступны через веб-сервер Nginx. Этот образ может быть использован для развертывания веб-сайта или приложения, основанного на Nginx, в контейнерной среде.
 ```Dockerfile
 FROM nginx:1.25.5
@@ -475,7 +485,16 @@ COPY WebSite/index.html /usr/share/nginx/html/index.html
 COPY WebSite/about.html /usr/share/nginx/html/about.html
 COPY WebSite/project.html /usr/share/nginx/html/project.html
 COPY WebSite/images/LateMouse.jpg /usr/share/nginx/html/images/LateMouse.jpg
-COPY WebSite/images/devops.jpg /usr/share/nginx/html/images/devops.jpg
+COPY WebSite/images/devops.png /usr/share/nginx/html/images/devops.png
+COPY WebSite/images/dec1.png /usr/share/nginx/html/images/dec1.png
+COPY WebSite/images/dec2.png /usr/share/nginx/html/images/dec2.png
+COPY WebSite/images/dec3.png /usr/share/nginx/html/images/dec3.png
+COPY WebSite/images/dec4.png /usr/share/nginx/html/images/dec4.png
+COPY WebSite/images/top.jpg /usr/share/nginx/html/images/top.jpg
+COPY WebSite/images/GKE.png /usr/share/nginx/html/images/GKE.png
+COPY WebSite/images/tele1.png /usr/share/nginx/html/images/tele1.png
+COPY WebSite/images/tele2.png /usr/share/nginx/html/images/tele2.png
+COPY WebSite/images/web.jpg /usr/share/nginx/html/images/web.jpg
 ```
 
 ##### 4.2.2. Файл /Docker/docker-compose.yml
