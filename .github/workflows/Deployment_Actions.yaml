@@ -34,7 +34,7 @@ jobs:
           yamllint_comment: true
 
       - name: "Linter: Run Lint Yaml file Kubernetes"
-       uses: karancode/yamllint-github-action@master
+        uses: karancode/yamllint-github-action@master
         with:
           yamllint_file_or_dir: './k8s/'
           yamllint_strict: false
@@ -49,7 +49,7 @@ jobs:
           sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
           sudo chmod +x /usr/local/bin/docker-compose
           sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
-         sudo apt-get install docker-compose
+          sudo apt-get install docker-compose
 
       - name: "Install: Setting up the Google Cloud CLI"
         uses: google-github-actions/auth@v2
